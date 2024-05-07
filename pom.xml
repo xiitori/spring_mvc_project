@@ -9,6 +9,8 @@
   <url>http://maven.apache.org</url>
   <properties>
     <spring.version>6.1.6</spring.version>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
   </properties>
   <dependencies>
     <dependency>

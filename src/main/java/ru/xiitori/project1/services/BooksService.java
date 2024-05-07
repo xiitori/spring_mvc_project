@@ -14,6 +14,7 @@ import java.util.Optional;
 @Transactional
 public class BooksService {
 
+
     private final BooksRepository booksRepository;
 
     @Autowired
@@ -62,5 +63,9 @@ public class BooksService {
 
     public Optional<Book> findByTitle(String title) {
         return booksRepository.findByTitle(title);
+    }
+
+    public List<Book> searchBooks(String beginning) {
+        return booksRepository.findByTitleStartingWith(beginning);
     }
 }

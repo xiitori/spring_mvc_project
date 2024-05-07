@@ -12,6 +12,7 @@ import ru.xiitori.project1.services.BooksService;
 import ru.xiitori.project1.services.PeopleService;
 import ru.xiitori.project1.utils.BookValidator;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -105,5 +106,19 @@ public class BooksController {
     public String release(@PathVariable("id") int bookId) {
         booksService.release(bookId);
         return "redirect:/books";
+    }
+
+    @GetMapping("/search")
+    public String searchPage() {
+        return "books/search";
+    }
+
+    @PostMapping("/search")
+    public String getSearchResults(@RequestParam(name = "request") String request, Model model) {
+        List<Book> books = booksService.searchBooks(request);
+
+        model.addAttribute("books", books);
+        model.addAttribute("prev", request);
+        return "/books/search";
     }
 }
