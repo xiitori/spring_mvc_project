@@ -10,7 +10,12 @@
     <div th:unless="${books.empty}">
         <h3>Books:</h3>
         <div th:each="book : ${books}">
+            <div th:if="${book.isExpired()}" style="color:red">
+                <p th:href="@{/books/{id}(id=${book.getId()})}" th:text="${book.getTitle() + ', ' + book.getYear()}"></p>
+            </div>
+            <div th:unless="${book.isExpired()}">
             <a th:href="@{/books/{id}(id=${book.getId()})}" th:text="${book.getTitle() + ', ' + book.getYear()}"></a>
+            </div>
         </div>
     </div>
     <hr>

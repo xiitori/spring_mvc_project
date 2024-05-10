@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,6 +37,13 @@ public class Book {
     @ManyToOne
     @JoinColumn(name = "person_id", referencedColumnName = "person_id")
     private Person owner;
+
+    @Column(name = "timestamp")
+    @Temporal(value = TemporalType.TIMESTAMP)
+    private Date startedAt;
+
+    @Transient
+    private boolean isExpired;
 
     public Book(String title, String author, int year) {
         this.title = title;
@@ -97,6 +105,22 @@ public class Book {
         }
 
         books.add(this);
+    }
+
+    public Date getStartedAt() {
+        return startedAt;
+    }
+
+    public void setStartedAt(Date startedAt) {
+        this.startedAt = startedAt;
+    }
+
+    public boolean isExpired() {
+        return isExpired;
+    }
+
+    public void setExpired(boolean expired) {
+        isExpired = expired;
     }
 
     @Override

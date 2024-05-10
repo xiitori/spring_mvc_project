@@ -9,12 +9,15 @@ import ru.xiitori.project1.models.Person;
 import ru.xiitori.project1.repositories.PeopleRepository;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
 public class PeopleService {
+
+    private static final int MILLISECONDS_PER_10_DAYS = 864000000;
 
     private final PeopleRepository peopleRepository;
 
@@ -52,7 +55,15 @@ public class PeopleService {
 
         if (person.isPresent()) {
             Hibernate.initialize(person.get().getBooks());
-            return person.get().getBooks();
+            List<Book> books = person.get().getBooks();
+
+            for (Book book : books) {
+                if (new Date().getTime() - book.getStartedAt().getTime() > MILLISECONDS_PER_10_DAYS) {
+                    book.setExpired(true);
+                }
+            }
+
+            return books;
         } else {
             return Collections.emptyList();
         }

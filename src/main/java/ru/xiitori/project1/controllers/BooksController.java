@@ -1,5 +1,6 @@
 package ru.xiitori.project1.controllers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,6 +13,7 @@ import ru.xiitori.project1.services.BooksService;
 import ru.xiitori.project1.services.PeopleService;
 import ru.xiitori.project1.utils.BookValidator;
 
+import java.net.http.HttpRequest;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,8 +35,16 @@ public class BooksController {
     }
 
     @GetMapping()
-    public String index(Model model) {
-        model.addAttribute("books", booksService.findAll());
+    public String index(Model model, @RequestParam(value = "page", required = false) Integer page,
+                        @RequestParam(value = "books_per_page", required = false) Integer booksPerPage,
+                        @RequestParam(value = "sort", required = false) boolean isSorted) {
+
+        if (page == null || booksPerPage == null) {
+            model.addAttribute("books", booksService.findAll(isSorted));
+        } else {
+            model.addAttribute("books", booksService.findAll(page, booksPerPage, isSorted));
+        }
+
         return "/books/index";
     }
 

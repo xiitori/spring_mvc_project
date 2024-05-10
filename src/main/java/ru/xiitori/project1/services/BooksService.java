@@ -1,19 +1,21 @@
 package ru.xiitori.project1.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.xiitori.project1.models.Book;
 import ru.xiitori.project1.models.Person;
 import ru.xiitori.project1.repositories.BooksRepository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @Transactional
 public class BooksService {
-
 
     private final BooksRepository booksRepository;
 
@@ -22,8 +24,20 @@ public class BooksService {
         this.booksRepository = booksRepository;
     }
 
-    public List<Book> findAll() {
-        return booksRepository.findAll();
+    public List<Book> findAll(boolean isSorted) {
+        if (isSorted) {
+            return booksRepository.findAll(Sort.by("year"));
+        } else {
+            return booksRepository.findAll();
+        }
+    }
+
+    public List<Book> findAll(int page, int booksPerPage, boolean isSorted) {
+        if (isSorted) {
+            return booksRepository.findAll(PageRequest.of(page, booksPerPage, Sort.by("year"))).toList();
+        } else {
+            return booksRepository.findAll(PageRequest.of(page, booksPerPage)).toList();
+        }
     }
 
     public Book findById(int id) {
@@ -51,14 +65,31 @@ public class BooksService {
 
     @Transactional
     public void assign(int bookId, Person person) {
-        Optional<Book> book = booksRepository.findById(bookId);
+        Optional<Book> optional = booksRepository.findById(bookId);
 
-        book.ifPresent(value -> value.setOwner(person));
+        if (optional.isEmpty()) {
+            return;
+        }
+
+        Book book = optional.get();
+
+        book.setStartedAt(new Date());
+        book.setOwner(person);
     }
 
     @Transactional
     public void release(int bookId) {
-        booksRepository.findById(bookId).ifPresent(book -> book.setOwner(null));
+        Optional<Book> optional = booksRepository.findById(bookId);
+
+        if (optional.isEmpty()) {
+            return;
+        }
+
+        Book book = optional.get();
+
+        book.setExpired(false);
+        book.setStartedAt(null);
+        book.setOwner(null);
     }
 
     public Optional<Book> findByTitle(String title) {
